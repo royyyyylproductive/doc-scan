@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="zh-HK">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#255a64">
+<link rel="icon" href="./icons/icon-192.png">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<link rel="stylesheet" href="./css/style.css">
+<title>文件掃描</title>
+</head>
+<body>
+<header>
+<button id="back" hidden>‹ 返回</button>
+<h1>文件掃描</h1>
+<button id="settings">設定</button>
+</header>
+<main>
+<section id="home">
+<h2>我的文件</h2>
+<div class="actions">
+<button id="new">＋ 新掃描</button>
+</div>
+<div id="history">
+</div>
+</section>
+<section id="document" hidden>
+<input id="title" aria-label="文件名稱" placeholder="文件名稱">
+<div class="actions document-actions">
+<label class="button"><span aria-hidden="true">◎</span><span>影相</span><input id="capture" type="file" accept="image/*" capture="environment" hidden>
+</label>
+<button id="camera"><span aria-hidden="true">▣</span><span>連續影</span></button>
+<label class="button"><span aria-hidden="true">＋</span><span>匯入</span><input id="importInput" type="file" accept="image/*,application/pdf" multiple hidden>
+</label>
+<button id="ocrAll"><span aria-hidden="true">文</span><span>辨識全部</span></button>
+<button id="export" aria-label="匯出／分享"><span aria-hidden="true">↥</span><span>匯出</span></button>
+</div>
+<div id="pages">
+</div>
+
+</section>
+<section id="editor" hidden>
+<nav id="tabs">
+<button data-tab="crop">裁切</button>
+<button data-tab="filter">濾鏡</button>
+<button data-tab="text">文字</button>
+<button data-tab="annotate">標註</button>
+</nav>
+<div id="crop" class="panel">
+<div class="canvas-wrap">
+<canvas id="cropCanvas">
+</canvas>
+</div>
+<div class="actions">
+<button id="detect">自動偵測</button>
+<button id="full">全頁</button>
+<button id="applyCrop">套用裁切</button>
+<button id="left">↶ 左轉</button>
+<button id="right">↷ 右轉</button>
+</div>
+</div>
+<div id="filter" class="panel" hidden>
+<img id="preview" alt="頁面預覽">
+<div class="actions">
+<button data-filter="original">原圖</button>
+<button data-filter="enhance">增強</button>
+<button data-filter="gray">灰階</button>
+<button data-filter="bw">黑白文件</button>
+</div>
+</div>
+<div id="text" class="panel" hidden>
+<div class="actions">
+<button id="ocr">辨識本頁</button>
+<button id="copy">複製全部</button>
+</div>
+<div class="toolbar">
+<button data-command="bold">粗體</button>
+<button data-command="italic">斜體</button>
+<button data-command="underline">底線</button>
+<button data-command="formatBlock" data-value="h2">標題</button>
+<button data-command="insertUnorderedList">清單</button>
+<button data-command="undo">復原</button>
+<button data-command="redo">重做</button>
+</div>
+<div id="textEditor" contenteditable="true" aria-label="辨識文字">
+</div>
+</div>
+<div id="annotate" class="panel" hidden>
+<p>選擇畫筆，在圖片上繪畫。</p>
+<div class="actions">
+<select id="tool">
+<option value="select">選取／移動</option>
+<option value="pen" selected>畫筆</option>
+<option value="highlight">螢光筆</option>
+<option value="text">文字框</option>
+<option value="signature">簽名</option>
+<option value="white">白色塗改</option>
+<option value="black">遮蓋</option>
+</select>
+<input id="color" type="color" value="#e03030" aria-label="顏色">
+<input id="width" type="range" min="2" max="40" value="5" aria-label="粗幼">
+<button id="deleteAnnotation">刪除所選</button>
+<button id="undoAnnotation">復原</button>
+<button id="clearAnnotation">清除</button>
+</div>
+<canvas id="annotationCanvas">
+</canvas>
+</div>
+</section>
+</main>
+<dialog id="settingsDialog">
+<h2>設定</h2>
+<div class="stack">
+<button id="offline">離線準備</button>
+<p id="storageInfo">正在檢查儲存空間…</p>
+<p id="offlineInfo">正在檢查離線檔案…</p>
+<button id="deleteAll">全部刪除</button>
+<button id="closeSettings">完成</button>
+</div>
+</dialog>
+<dialog id="cameraDialog">
+<video autoplay playsinline muted>
+</video>
+<div class="actions">
+<span id="cameraCount">0 頁</span>
+<button id="shoot">拍照</button>
+<button id="closeCamera">完成</button>
+</div>
+</dialog>
+<dialog id="signatureDialog">
+<h2>簽名</h2>
+<canvas id="signaturePad" width="600" height="240">
+</canvas>
+<div class="actions">
+<button id="clearSignature">清除</button>
+<button id="useSignature">使用簽名</button>
+<button id="cancelSignature">取消</button>
+</div>
+</dialog>
+<dialog id="exportDialog">
+<h2>匯出／分享</h2>
+<div class="stack">
+<button data-export="pdf-search">可搜尋 PDF</button>
+<button data-export="pdf-text">純文字 PDF</button>
+<button data-export="docx">Word（DOCX）</button>
+<button data-export="png">圖片 PNG</button>
+<button data-export="jpg">圖片 JPG</button>
+<button data-export="txt">TXT</button>
+<button id="closeExport">取消</button>
+</div>
+</dialog>
+<dialog id="resultDialog"><h2>匯出完成</h2><p id="resultInfo"></p><div class="stack"><button id="shareResult">分享</button><button id="downloadResult">下載</button><button id="closeResult">完成</button></div></dialog>
+<div id="status" role="status"></div>
+<script type="module" src="./js/app.js">
+</script>
+</body>
+</html>
+
